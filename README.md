@@ -1,3 +1,10 @@
+this is a React App
+to run react on your machine,You’ll need to have Node >= 14.0.0 and npm >= 5.6 on your machine.
+After setuping Node and npm
+open a terminal in the project
+run "npm install"
+then run "npm start"
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
