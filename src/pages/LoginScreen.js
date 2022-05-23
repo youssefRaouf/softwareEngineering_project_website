@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 
 const Container = styled.div`
 display: flex;
-flex-direction: column; 
+flex-direction: column;
+margin-top:5%; 
 `
 const LoginMessage = styled.div`
 font-size: 20px;
@@ -26,14 +27,15 @@ align-items: center;
 justify-content: center;
 cursor: pointer;
 align-self: end;
-margin-top: 15px;
+margin-right:25%;
+margin-top: 25px;
 padding-bottom:3px;
 margin-bottom: 15px;
 `
 const Label = styled.div`
 color: black;
 font-size: 20px;
-margin-left: 60px;
+margin-left: 15%;
 margin-top: 10px;
 margin-bottom: -20px;
 align-self: flex-start;

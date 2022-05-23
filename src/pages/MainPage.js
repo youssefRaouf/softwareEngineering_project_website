@@ -1,11 +1,8 @@
-/*global chrome*/
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useMemo, useCallback } from "react"
 import { getTweets, checkFollow } from '../Services/api.js';
 import styled from "styled-components";
 import Visualization from "../Components/Visualization"
-import ParentalControl from "../Components/ParentalControl"
-import Status from "../Components/StatusComponent"
 import formatDistanceToNowStrict from 'date-fns/formatDistanceToNowStrict'
 import addDays from 'date-fns/addDays'
 import addMonths from 'date-fns/addMonths'
@@ -23,6 +20,7 @@ const SpinnerContainer = styled.div`
 const HeaderContainer = styled.div`
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
 `;
 
 const Label = styled.div`
@@ -35,35 +33,21 @@ const Label = styled.div`
     margin-right: 30px;
 `;
 
-const Tab = styled.div`
-    cursor: pointer;
-    font-size: 18px;
-    color: black;
-    margin: 10px 15px 10px 10px;
-    display: flex;
-    align-items: center;
-    width: 201px;
-    justify-content: center;
-    padding-bottom: 3px;
-`;
 
 const LogoutBtn = styled.div`
     cursor: pointer;
     color: red;
     font-size: 18px;
     margin: 10px 10px 10px 10px;
-    width: 100%;
+    width: 100px;
     display: flex;
-    justify-content: flex-end;        
 `;
 
 const MainPage = () => {
     const navigate = useNavigate()
     const [tweets, setTweets] = useState(JSON.parse(localStorage.getItem('tweets')) || [])
-    const [tab, setTab] = useState(0);
     const [loading, setLoading] = useState(false);
     const [duration, setDuration] = useState('week');
-    const [parentalControl, setParentalControl] = useState(JSON.parse(localStorage.getItem('parentalControl')) || false);
     const [users, setUsers] = useState(JSON.parse(localStorage.getItem('users')) || {});
     const getTweetsForCachedUser = async () => {
         const userId = JSON.parse(localStorage.getItem('user')).providerData[0].uid;
@@ -230,37 +214,6 @@ const MainPage = () => {
         setDuration(event.target.value);
     };
 
-    const handleCheckBox = useCallback(event => {
-        chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-            const activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, { parentalControl: !parentalControl });
-        });
-        chrome.storage.sync.set({ 'parentalControl': !parentalControl }, function () {
-        });
-        setParentalControl(!parentalControl)
-    }, [setParentalControl, parentalControl])
-
-    useEffect(() => {
-        localStorage.setItem('parentalControl', JSON.stringify(parentalControl))
-    }, [parentalControl])
-
-    // chrome.runtime.onMessage.addListener(
-    //     function (request, sender, sendResponse) {
-    //         if (request.users) {
-    //             localStorage.setItem('users', JSON.stringify(request.users))
-    //             setUsers(request.users)
-    //             sendResponse({ received: true });
-    //         }
-    //     }
-    // );
-
-    useEffect(() => {
-        // chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
-        //     const activeTab = tabs[0];
-        //     chrome.tabs.sendMessage(activeTab.id, { sendUsers: true });
-        // });
-    }, [])
-
     const userToUnfollow = useMemo(() => {
         let handle = ""
         let max = 0;
@@ -291,9 +244,6 @@ const MainPage = () => {
         <div>
             <HeaderContainer>
                 <Label>EmoTool</Label>
-                <Tab onClick={() => setTab(0)} style={{ borderBottom: tab === 0 ? "1px solid red" : 0 }}>Home</Tab>
-                <Tab onClick={() => setTab(1)} style={{ borderBottom: tab === 1 ? "1px solid red" : 0, whiteSpace: "nowrap" }}>Parental Control</Tab>
-                <Tab onClick={() => setTab(2)} style={{ borderBottom: tab === 2 ? "1px solid red" : 0 }}>Status</Tab>
                 <LogoutBtn onClick={logout}>Logout</LogoutBtn>
             </HeaderContainer>
             {loading && <SpinnerContainer><TailSpin
@@ -302,13 +252,7 @@ const MainPage = () => {
                 color='grey'
                 ariaLabel='loading'
             /></SpinnerContainer>}
-            {!loading && tab === 0 && <Visualization graphTweets={duration === "week" ? TweetsByweek : duration === "month" ? TweetsByMonth : TweetsByYear} duration={duration} handleDurationChange={handleDurationChange} />}
-            {tab === 1 &&
-                <ParentalControl parentalControl={parentalControl} handleCheckBox={handleCheckBox} />
-            }
-            {tab === 2 &&
-                <Status userToUnfollow={userToUnfollow} status={duration === "week" ? TweetsByweek.status : duration === "month" ? TweetsByMonth.status : TweetsByYear.status} />
-            }
+            {!loading && <Visualization graphTweets={duration === "week" ? TweetsByweek : duration === "month" ? TweetsByMonth : TweetsByYear} duration={duration} handleDurationChange={handleDurationChange} />}
         </div>
     );
 }

@@ -9,11 +9,11 @@ function App() {
       <div className="App">
         <Routes>
           <Route exact path='/' element={
-            <div style={{ width: 761, boxShadow: "2px 2px #b7b3b3" }}>
+            <div>
               <LoginScreen />
             </div>} />
           <Route path='/Main' element={
-            <div style={{ width: 761, boxShadow: "2px 2px #b7b3b3" }}>
+            <div>
               <MainPage />
             </div>} />
         </Routes>
